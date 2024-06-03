@@ -1,0 +1,239 @@
+# TAREA-11
+## EJERCICIOS PROPUESOS
+## 1. Consulta de Proyecto:
+ ¿Cuáles son los identificadores y nombres de todos los proyectos existentes en la empresa?
+
+ **SOLUCION:**
+ ```sql
+ SELECT IDProyecto, NombreProyecto
+ FROM Proyecto;
+ ´´´
+ | IDProyecto | NombreProyecto |
+ |-----------:| -----------:|
+ | 1  | P1 |
+ | 2  | P2 |
+ | 3  | P3 |
+ | 4  | P4 |
+ | 5  | P5 |
+
+## 2.Consulta de Proyectos por Ubicación:
+¿Cuáles son los proyectos que se desarrollan en 'CHICAGO'?
+** SOLUCION:**
+```sql
+SELECT IDProyecto, NombreProyecto, ubicacion
+FROM Proyecto
+WHERE Ubicacion = 'CHICAGO';
+```
+ | IDProyecto | NombreProyecto | Ubicacion | 
+ |-----------:| -----------:| ---------- : | 
+ | 2 | P4 | CHICAGO | 
+ | 3 | P5 | CHICAGO | 
+
+ ## 3.Consulta de Proyectos por Departamento:
+ ¿Cuáles son los proyectos que pertenecen al departamento con identificador 2?
+
+ **SOLUCION:**
+```sql
+ SELECT P.IDProyecto, P.NombreProyecto, D.NombreDepartamento
+FROM Proyecto P
+JOIN Departamento D ON P.IDDepartamento = D.IDDepartamento
+WHERE D.IDDepartamento = 2;
+```
+
+  | IDProyecto | NombreProyecto | NombreDepartamento | 
+ |-----------:| -----------:| ---------- : | 
+ | 1 | P1 | RESEARCH | 
+
+
+## 4.Consulta de Proyectos y Departamentos:
+¿Cuáles son los nombres y ubicaciones de los proyectos junto con los nombres de sus departamentos asociados?
+
+**SOLUCION:**
+```sql
+SELECT P.NombreProyecto AS NombreProyecto, P.Ubicacion, D.NombreDepartamento AS NombreDepartamento
+FROM Proyecto P
+JOIN Departamento D ON P.IDDepartamento= D.IDDepartamento;
+```
+ | IDProyecto | Ubicacion | NombreDepartamento |
+ |-----------:| -----------:| ---------: |
+ | P1  | BOSTON | RESEARCH |
+ | P4  | CHICAGO | SALES    |
+ | P5  | CHICAGO | SALES    |
+ | P6  | LOS ANGELES | SALES    |
+ | P8  | NEW YORK | SALES    |
+
+ ## 5. Consulta de Empleados por Proyecto:
+ ¿Qué empleados están asignados al proyecto identificado con el número 4, y cuáles son sus nombres?
+
+ **SOLUCION:**
+```sql
+ SELECT E. IDEmpleado, E. NombreEmpleado
+FROM Empleado E
+JOIN EmpleadoProyecto EP ON E. IDEmpleado = EP. IDEmpleado
+WHERE EP.IDProyecto = 4;
+```
+| IDEmpleado | NombreEmpleado |
+ |-----------:| -----------:|
+ | 10  | MARTIN |
+
+ ## 7.Consulta de Horas Trabajadas por Proyecto:
+
+ ¿Cuántas horas han trabajado en total los empleados en el proyecto con identificador 2?
+
+ **SOLUION:**
+ ```sql
+ SELECT SUM(EP.HorasTrabajadas) AS TotalHoras
+FROM EmpleadoProyecto EP
+WHERE EP.IDProyecto =2;
+```
+| TotalHoras |
+ |----------:|
+ |     25    |
+
+ ## 8. Consulta de Empleados con Horas Trabajadas:
+
+ ¿Cuáles son los empleados que han trabajado más de 10 horas en el proyecto con identificador 2?
+
+ **SOLUCION:**
+ ```sql
+ SELECT E.IDEmpleado, E.NombreEmpleado
+FROM Empleado E
+JOIN EmpleadoProyecto EP ON E.IDEmpleado = EP.IDEmpleado
+WHERE EP.IDProyecto = 2  AND EP.HorasTrabajadas >10;
+```
+| IDEmpleado |NombreEmpleado |
+ |----------:| ----------: |
+ |     8    |  ALLEN   |
+
+ ## 9. Consulta de Total de Horas por Empleado:
+ ¿Cuál es el total de horas trabajadas por cada empleado en todos los proyectos?
+
+**SOLUCION:**
+```sql
+SELECT E.IDEmpleado, E.NombreEmpleado, SUM(EP.HorasTrabajadas) AS TotalHoras
+FROM Empleado E
+JOIN EmpleadoProyecto EP ON E.IDEmpleado =EP.IDEmpleado
+GROUP BY E.IDEmpleado, E.NombreEmpleado;
+```
+ | IDEmpleado | NombreEmpleado | TotalHoras |
+ |-----------:| -----------:| ---------: |
+ | 8  | ALLEN  | 27 |
+ | 9  | WARD   | 18 |
+ | 10 | MARTIN | 36 |
+ | 11 | TURNER | 6  |
+ | 12 | ADAMS  | 4  |
+
+ ## 10.	Consulta de Empleados con Múltiples Proyectos:
+¿Cuáles son los empleados que trabajan en más de un proyecto?
+
+**SOLUCION:**
+```sql
+SELECT E.IDEmpleado, E.NombreEmpleado
+FROM Empleado E
+JOIN EmpleadoProyecto EP ON E.IDEmpleado = EP.IDEmpleado
+GROUP BY E.IDEmpleado, E.NombreEmpleado
+HAVING COUNT(EP.IDProyecto)>1;
+```
+| IDEmpleado | NombreEmpleado |
+ |-----------:| -----------:|
+ | 8  | ALLEN |
+ | 9  | WARD |
+ | 10 | MARTIN |
+
+## 11.	Consulta de Empleados y Horas Totales:
+¿Cuáles son los empleados que han trabajado más de 30 horas en total en todos los proyectos?
+
+**SOLUCION:**
+```sql
+SELECT E.IDEmpleado, E.NombreEmpleado
+FROM Empleado E
+JOIN EmpleadoProyecto EP ON E.IDEmpleado = EP.IDEmpleado
+GROUP BY E.IDEmpleado, E.NombreEmpleado
+HAVING SUM(EP.HorasTrabajadas)>30;
+```
+| IDEmpleado |NombreEmpleado |
+ |----------:| ----------: |
+ |     10    |  MARTIN   |
+
+ ## 12.	Consulta de Proyectos y Horas Promedio:
+ ¿Cuál es el promedio de horas trabajadas por proyecto?
+
+ **SOLUCION:**
+```sql
+ SELECT P.IDProyecto, P.NombreProyecto, AVG(EP.HorasTrabajadas) AS PromedioHoras
+FROM Proyecto P
+JOIN EmpleadoProyecto EP ON P.IDProyecto = EP.IDProyecto
+GROUP BY P.IDProyecto, P.NombreProyecto;
+```
+ | IDProyecto | NombreProyecto |
+ |-----------:| -----------:|
+ | 1  | P1 |
+ | 2  | P4 |
+ | 3  | P5 |
+ | 4  | P6 |
+ | 5  | P8 |
+
+ ## CONSULTAS AVANZADAS
+ ## Pregunta 1: Empleados en Proyectos Específicos y con Salario Alto:
+ ¿Cuáles son los empleados que trabajan en proyectos ubicados en 'CHICAGO' y que tienen un salario (con o sin comisión) superior a 2000?
+
+ **SOLUCION:**
+ ```sql 
+       SELECT E.IDEmpleado, E.NombreEmpleado, E.Salario, E.Comision, P.NombreProyecto
+      FROM Empleado E
+      JOIN EmpleadoProyecto EP ON E.IDEmpleado = EP.IDEmpleado
+      JOIN Proyecto P ON EP.IDProyecto = P.IDProyecto
+      WHERE P.Ubicacion = ' CHICAGO'
+      AND (E.salario + COALESCE(E.comision, 0))> 2000;
+```
+ | IDEmpleado | NombreEmpleado |Salario | Comision | NombreProyeco |
+ |-----------:| -----------:|
+ | 8  | ALLEN  |  1600 | 300  | p4 |
+ | 8  | ALLEN  |  1600 | 300  | p5 |
+ | 9  | WARD   |  1250 | 500  | p4 |
+ | 9  | WARD   |  1250 | 500  | p8 |
+ | 10 | MARTIN |  1250 | 1400 | p1 |
+ | 10 | MARTIN |  1250 | 1400 | p6 |
+ | 10 | MARTIN |  1250 | 1400 | p8 |
+ | 11 | TURNER |  1500 |   0  | p5 |
+ | 12 | ADAMS  |  1100 |<null>| p1 |
+
+
+ ## Pregunta 2: Empleados con Jefe y en Proyectos Múltiples:
+ ¿Cuáles son los empleados que tienen un jefe, están asignados a más de un proyecto, y han trabajado más de 15 horas en total en todos los proyectos combinados?
+
+ **SOLUCION**
+ ```sql
+ SELECT E.IDEmpleado, E.NombreEmpleado
+FROM Empleado E
+JOIN EmpleadoProyecto EP ON E.IDEmpleado = EP.IDEmpleado
+WHERE E.IDJefe IS NOT NULL
+GROUP BY E.IDEmpleado, E.NombreEmpleado
+HAVING COUNT (EP.IDProyecto)>1 AND SUM(EP.HorasTrabajadas)> 15;
+```
+| IDEmpleado |NombreEmpleado |
+ |----------:| ----------: |
+ |     8    |  ALLEN   |
+ |     9    |  WARD    |
+ |    10    |  MARTIN  |
+
+## Pregunta 3: Empleados sin Comisión en Departamentos Específicos:
+¿Cuáles son los empleados que no reciben comisión y trabajan en departamentos ubicados en 'DALLAS' o 'NEW YORK'?
+
+**SOLUCION:**
+```sql
+SELECT E.IDEmpleado, E.NombreEmpleado, D.NombreDepartamento, D.Ubicacion
+FROM Empleado E
+JOIN Departamento D ON E.IDDepartamento = D.IDDepartamento
+WHERE E.comision IS NULL AND (D.Ubicacion = 'DALLAS' OR D.Ubicacion ='NEW YORK');
+```
+ | IDEmpleado | NombreEmpleado |NombreDepartamento| Ubicacion | 
+ |-----------:| -----------:|
+ | 1  | KING  | ACCOUNTING| NEW YORK | 
+ | 2  | JONES |  RESEARCH | DALLAS   | 
+ | 4  | CLARK | ACCOUNTING| NEW YORK | 
+ | 5  | SCOTT |  RESEARCH | DALLAS   | 
+ | 6  | FORD  |  RESEARCH | DALLAS   | 
+ | 7  | SMITH |  RESEARCH | DALLAS   | 
+ | 12 | ADAMS |  RESEARCH | DALLAS   | 
+ | 14 | MILLER| ACCOUNTING| NEW YORK | 
